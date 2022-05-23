@@ -8,12 +8,12 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>{% block tytul %}ANKIETA{% endblock %}</title>
+    <title>{% block title %}VET CliniC{% endblock %}</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/navbar-static/">
 
     <!-- Bootstrap core CSS -->
-    <link href="{% static 'ankiety/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'przychodnia/css/bootstrap.min.css' %}" rel="stylesheet">
 
     <style>
         .bd-placeholder-img {
@@ -33,7 +33,7 @@
 
 
     <!-- Custom styles for this template -->
-    <link href="{% static 'ankiety/css/navbar-top.css' %}" rel="stylesheet">
+    <link href="{% static 'przychodnia/css/navbar-top.css' %}" rel="stylesheet">
 </head>
 <body>
 
@@ -64,11 +64,11 @@
 </nav>
 
 <main class="container">
-    {% block zawartosc %}{% endblock %}
+    {% block main_content %}{% endblock %}
 </main>
 
 
-<script src="{% static 'ankiety/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'przychodnia/js/bootstrap.bundle.min.js' %}"></script>
 
 
 </body>

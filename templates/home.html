@@ -1,12 +1,13 @@
-{% extends "szablon.html" %}
+{% extends "main_template.html" %}
 
-{% block tytul %}Główna{% endblock %}
+{% block title %}Main page - home{% endblock %}
 
-{% block zawartosc %}
-<h1>Strona z ankietami </h1>
+{% block main_content %}
+<h1>Choose what you want to see</h1>
 
 <ul>
     <li><a href="wypelnij/">Wypełnij ankiete</a> </li>
+    <li><a href="wyniki/">Wyniki ankiety</a> </li>
     <li><a href="wyniki/">Wyniki ankiety</a> </li>
 </ul>
 {% endblock %}

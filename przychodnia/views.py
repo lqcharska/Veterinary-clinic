@@ -52,14 +52,15 @@ def show_owners(request):
 
 def watch_owner(request):
     if request.GET:
-        watch_owner = WatchOwnerForm(request.GET)
-        if watch_owner.is_valid():
-            selected_owner_id = watch_owner.cleaned_data["selected_owner_id"]
+        watched_owner = WatchOwnerForm(request.GET)
+        if watched_owner.is_valid():
+            selected_owner_id = watched_owner.cleaned_data["selected_owner_id"]
             owner = Owner.objects.filter(id=selected_owner_id)
             if len(owner) > 0:
                 owner = owner[0]
                 return render(request, 'watch_owner.html', {
                     'owner': owner,
                  })
-            else:
-                return redirect('show_owners')
+
+    return redirect('show_owners')
+

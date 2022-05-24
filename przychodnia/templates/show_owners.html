@@ -1,0 +1,28 @@
+{% extends "main_template.html" %}
+
+{% block title %}Show owners{% endblock %}
+
+{% block main_content %}
+    <h1>Show all owners</h1>
+
+    <table class="table">
+        <tr>
+            <th>LP</th>
+            <th>ID</th>
+            <th>NAME</th>
+            <th>PHONE</th>
+            <th>ADDRESS</th>
+        </tr>
+
+        {% for owner in owners %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ owner.id }}</td>
+                <td>{{ owner.name }}</td>
+                <td>{{ owner.phone }}</td>
+                <td>{{ owner.address }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

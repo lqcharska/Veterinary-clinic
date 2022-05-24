@@ -10,7 +10,7 @@ def index(request):
     return render(request, 'home.html', {})
 
 
-def add_owner_form(request):
+def add_owner(request):
     # print(Owner.objects.all().delete())
     # Variable to handle form errors
     received_errors_dictionary = {}
@@ -41,3 +41,10 @@ def add_owner_form(request):
         'success_message': success_message if success_message != "" else None,  # not used for now
         'error_message': error_message if error_message != "" else None,  # not used for now
     })
+
+
+def show_owners(request):
+    owners = Owner.objects.all()
+    return render(request, 'show_owners.html', {
+        'owners': owners,
+     })

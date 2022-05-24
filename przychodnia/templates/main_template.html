@@ -70,6 +70,19 @@
 
 <script src="{% static 'przychodnia/js/bootstrap.bundle.min.js' %}"></script>
 
+{% if received_errors_dictionary %}
+	<script>
+        const mess = "error";
+        {#alert("This is an ERROR box.");  // display string message#}
+    </script>
+{% endif %}
+
+{% if success_message %}
+	<script>
+    const mess = "success";
+		{#alert("This is an SUCCESS.");  // display string message#}
+    </script>
+{% endif %}
 
 </body>
 </html>

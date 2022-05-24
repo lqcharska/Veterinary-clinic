@@ -18,7 +18,7 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ owner.id }}</td>
-                <td>{{ owner.name }}</td>
+                <td><a href="/watch_owner/?selected_owner_id={{ owner.id }}" >{{ owner.name }}</a></td>
                 <td>{{ owner.phone }}</td>
                 <td>{{ owner.address }}</td>
             </tr>

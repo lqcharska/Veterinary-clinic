@@ -5,6 +5,10 @@ from django.forms import models
 from przychodnia.models import Owner
 
 
+class WatchOwnerForm(forms.Form):
+    selected_owner_id = forms.IntegerField()
+
+
 class AddOwnerForm(models.ModelForm):
     phone = forms.CharField(max_length=9, required=True)
     name = forms.CharField(max_length=30, required=True)

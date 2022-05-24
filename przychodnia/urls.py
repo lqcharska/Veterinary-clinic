@@ -10,4 +10,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('add_owner/', views.add_owner),
     path('show_owners/', views.show_owners),
+    path('watch_owner/', views.watch_owner),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,8 +1,8 @@
 from django.core.exceptions import ValidationError
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
-from przychodnia.forms import AddOwnerForm
+from przychodnia.forms import AddOwnerForm, WatchOwnerForm
 from przychodnia.models import Owner
 
 
@@ -48,3 +48,18 @@ def show_owners(request):
     return render(request, 'show_owners.html', {
         'owners': owners,
      })
+
+
+def watch_owner(request):
+    if request.GET:
+        watch_owner = WatchOwnerForm(request.GET)
+        if watch_owner.is_valid():
+            selected_owner_id = watch_owner.cleaned_data["selected_owner_id"]
+            owner = Owner.objects.filter(id=selected_owner_id)
+            if len(owner) > 0:
+                owner = owner[0]
+                return render(request, 'watch_owner.html', {
+                    'owner': owner,
+                 })
+            else:
+                return redirect('show_owners')

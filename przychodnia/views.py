@@ -20,19 +20,17 @@ def add_owner_form(request):
         received_form = AddOwnerForm(request.POST)
 
         if received_form.is_valid():
-            if len(Owner.objects.filter(name=received_form.cleaned_data['name'],
-                                        phone=received_form.cleaned_data['phone'],
-                                        address=received_form.cleaned_data['address'])) > 0:
+            if len(Owner.objects.filter(name=received_form.cleaned_data['name'])) > 0:
                 """
                 If user with this data exists, we can not add this data to database
                 """
-                error_message = "User exists"
+                error_message = f"User {received_form.cleaned_data['name']} exists."
             else:
                 """
                 User not exists, can be added to database
                 """
                 received_form.save()
-                success_message = "Successfully saved owner data"
+                success_message = f"Successfully saved user {received_form.cleaned_data['name']}"
         else:
             # TODO this should be handled and message printed to user
             # received_errors_dictionary = received_form.errors.as_data()

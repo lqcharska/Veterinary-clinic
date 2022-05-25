@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import models
 
-from przychodnia.models import Owner
+from przychodnia.models import Animal, Owner
 
 
 class WatchOwnerForm(forms.Form):
@@ -34,3 +34,16 @@ class AddOwnerForm(models.ModelForm):
             raise forms.ValidationError('Phone is not digit')
 
         return phone
+
+class AddAnimalForm(models.ModelForm):
+    owner = forms.ModelChoiceField(queryset=Owner.objects.all())
+    # owner = forms.IntegerField(required=True)
+    age = forms.IntegerField(required=True)
+    name = forms.CharField(max_length=30, required=True)
+    type = forms.CharField(max_length=100, required=True)
+
+    class Meta:
+        model = Animal
+        fields = '__all__'
+
+        

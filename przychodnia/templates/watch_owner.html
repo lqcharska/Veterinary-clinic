@@ -10,13 +10,44 @@
     <h2>{{ owner.name }}</h2>
     <h2>{{ owner.phone }}</h2>
     <h2>{{ owner.address }}</h2>
-    <hr class="mt-2 mb-3"/>
-
-    <h3>Actions</h3>
-
+    
     <hr class="mt-2 mb-3"/>
 
     <h3>Pets</h3>
+
+    {% if owners_animals %}
+        <table class="table">
+            <tr>
+                <th>NAME</th>
+                <th>AGE</th>
+                <th>TYPE</th>
+            </tr>
+
+            {% for animal in owners_animals %}
+                <tr>
+                    <td>{{ animal.name }}</td>
+                    <td>{{ animal.age }}</td>
+                    <td>{{ animal.get_type_display }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <form name="add_animal" action="/watch_owner/" method="post">
+        {% csrf_token %}
+        <input type="hidden" required name="owner" value="{{ owner.id }}" /> 
+        <input type="text" required placeholder="Name" name="name" />
+        <input type="number" required placeholder="Age" name="age" />
+        <select name="type" required>
+            <option></option>
+            <option value="d">Dog</option>
+            <option value="c">Cat</option>
+            <option value="h">Hamster</option>
+            <option value="g">Guinea pig</option>
+        </select>
+
+        <input type="submit" value="Submit"/>
+    </form>
 
     <hr class="mt-2 mb-3"/>
 

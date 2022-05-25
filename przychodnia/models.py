@@ -23,7 +23,7 @@ class Animal(models.Model):
     """
     The animal, can be one type of: dog, cat, hamster, guinea pig
     """
-    owner_key = models.ForeignKey(Owner, on_delete=models.CASCADE)
+    owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
     age = models.IntegerField()
     name = models.CharField(max_length=30)
 
@@ -33,6 +33,9 @@ class Animal(models.Model):
         ('h', 'hamster'),
         ('g', 'guinea pig')
     ])
+
+    def __str__(self):
+        return 'name: %s, age: %s, type: %s' % (self.name, self.age, self.type)
 
 
 class Bill(models.Model):

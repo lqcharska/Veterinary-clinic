@@ -7,13 +7,19 @@
 
 
 Fill data:
-<form method="post" action="" novalidate>
+<form id="add_owner_form" method="post" action="" novalidate>
     {% csrf_token %}
     <ul>
         {{ form.as_ul }}
     </ul>
-    <input type="submit" value="Send">
-    <input type="reset" value="Reset">
 </form>
+
+<button type="submit" form="add_owner_form" value="Submit">
+    <i class="fa-solid fa-paper-plane"></i> Submit
+</button>
+
+<button type="reset" form="add_owner_form" value="Reset">
+    <i class="fa-solid fa-broom"></i> Reset
+</button>
 
 {% endblock %}

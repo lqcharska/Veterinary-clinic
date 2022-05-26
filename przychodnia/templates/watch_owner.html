@@ -14,7 +14,7 @@
     <hr class="mt-2 mb-3"/>
     <h3>Buy equiplent</h3>
 
-    <form name="buy_equiplent" action="/watch_owner/" method="post">
+    <form id="buy_equiplent" action="/watch_owner/" method="post">
         {% csrf_token %}
         <input type="hidden" required name="form_name" value="buy_equiplent" /> 
         <input type="hidden" required name="owner" value="{{ owner.id }}" /> 
@@ -34,9 +34,12 @@
             {% endfor %}
         </select>
 
-        <input type="submit" value="Submit"/>
+        <!-- <input type="submit" value="Submit"/> -->
     </form>
 
+    <button type="submit" form="buy_equiplent" value="Submit">
+        <i class="fa-solid fa-paper-plane"></i> Submit
+    </button>
 
     <hr class="mt-2 mb-3"/>
     <h3>Pets</h3>
@@ -59,7 +62,7 @@
         </table>
     {% endif %}
 
-    <form name="add_animal" action="/watch_owner/" method="post">
+    <form id="add_animal" action="/watch_owner/" method="post">
         {% csrf_token %}
         <input type="hidden" required name="owner" value="{{ owner.id }}" /> 
         <input type="hidden" required name="form_name" value="add_animal" /> 
@@ -73,8 +76,12 @@
             <option value="g">Guinea pig</option>
         </select>
 
-        <input type="submit" value="Submit"/>
+        <!-- <input type="submit" value="Submit"/> -->
     </form>
+
+    <button type="submit" form="add_animal" value="Submit">
+        <i class="fa-solid fa-paper-plane"></i> Submit
+    </button>
 
     <hr class="mt-2 mb-3"/>
 

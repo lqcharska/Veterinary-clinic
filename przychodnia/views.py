@@ -53,6 +53,13 @@ def show_owners(request):
      })
 
 
+def show_animals(request):
+    animals = Animal.objects.all()
+    return render(request, 'show_animals.html', {
+        'animals': animals,
+     })
+
+
 def _render_watch_owner(request, owner, success_message, error_message):
     """
     Render page for specified owner with messages

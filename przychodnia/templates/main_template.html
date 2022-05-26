@@ -52,16 +52,12 @@
                     <a class="nav-link" href="/show_owners">Show owners</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/add_dog">Add pet</a>
+                    <a class="nav-link" href="/show_animals">Show animals</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link">BILLS</a>
+                    <a class="nav-link" href="/show_bills">Show bills</a>
                 </li>
             </ul>
-{#            <form class="d-flex">#}
-{#                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">#}
-{#                <button class="btn btn-outline-success" type="submit">Search</button>#}
-{#            </form>#}
         </div>
     </div>
 </nav>
@@ -80,7 +76,8 @@
 {% endif %}
 
 {% if success_message %}
-	<script>        setTimeout(() => {alert("{{ success_message }}");}, 500)
+	<script>        
+        setTimeout(() => {alert("{{ success_message }}");}, 500)
     </script>
 {% endif %}
 

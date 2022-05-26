@@ -1,0 +1,27 @@
+{% extends "main_template.html" %}
+
+{% block title %}Show bills{% endblock %}
+
+{% block main_content %}
+    <h1>Show all bills</h1>
+
+    <table class="table">
+        <tr>
+            <th>LP</th>
+            <th>Owner name</th>
+            <th>Animal name</th>
+            <th>Product</th>
+            <th>Date</th>
+        </tr>
+
+        {% for bill in bills %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ bill.owner.name }}</td>
+                <td>{{ bill.animal.name }}</td>
+                <td>{{ bill.product }}</td>
+                <td>{{ bill.date }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

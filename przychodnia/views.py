@@ -53,6 +53,13 @@ def show_owners(request):
      })
 
 
+def show_bills(request):
+    bills = Bill.objects.all()
+    return render(request, 'show_bills.html', {
+        'bills': bills,
+     })
+
+
 def show_animals(request):
     animals = Animal.objects.all()
     return render(request, 'show_animals.html', {

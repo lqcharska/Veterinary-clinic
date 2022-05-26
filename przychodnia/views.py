@@ -2,9 +2,10 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm
-from przychodnia.models import Animal, Owner
+from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm, BuyEquipmentForm
+from przychodnia.models import Animal, Owner, Bill
 
+from datetime import datetime
 
 def index(request):
     return render(request, 'home.html', {})
@@ -12,6 +13,8 @@ def index(request):
 
 def add_owner(request):
     # print(Owner.objects.all().delete())
+    # print(Bill.objects.all().delete())
+    # print(Animal.objects.all().delete())
     # Variable to handle form errors
     received_errors_dictionary = {}
     error_message = ""
@@ -50,12 +53,57 @@ def show_owners(request):
      })
 
 
+def _render_watch_owner(request, owner, success_message, error_message):
+    """
+    Render page for specified owner with messages
+    """
+
+    """
+    Find all bills requested by owner
+    """
+    bills = Bill.objects.filter(owner=owner)
+
+    """
+    Find all animals that belengs to the selected owner
+    """
+    owners_animals = Animal.objects.filter(owner=owner)
+    if len(owners_animals) == 0:
+        owners_animals = None
+
+    return render(request, 'watch_owner.html', {
+        'owner': owner,
+        'success_message': success_message if success_message != "" else None,
+        'error_message': error_message if error_message != "" else None,
+        'owners_animals': owners_animals,
+        'bills': bills if len(bills) > 0 else None,
+    })
+
+
 def watch_owner(request):
     success_message = ""
     error_message = ""
+    if request.POST and request.POST.get("form_name") == 'buy_equiplent':
+        print("received buy fprm")
+        received_buy_form = BuyEquipmentForm(request.POST)
+        if received_buy_form.is_valid():
+            owner = received_buy_form.cleaned_data["owner"]
+            animal_id = received_buy_form.cleaned_data["animal_id"]
+            product = received_buy_form.cleaned_data["product"]
+
+            bill_model = Bill(owner=owner,
+                            animal=Animal.objects.filter(id=animal_id)[0],
+                            product=product,
+                            date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+            
+            bill_model.save()
+
+            return _render_watch_owner(request, owner, success_message, error_message)
+        else:
+            error_message = str(received_buy_form.errors)
     
-    if request.POST:
+    if request.POST and request.POST.get("form_name") == 'add_animal':
         """
+        There are more then one possible form, based on 'form_name' the proper one is recognized
         If sb added new animal, the owner is hidden in 'add_animal' form
         Go to 'watch_owner.html' and see the form
         """
@@ -80,21 +128,10 @@ def watch_owner(request):
                 received_animal_form.save()
                 success_message = f"Successfully added new animal: {received_animal_form.cleaned_data['name']}"
 
-            """
-            Find all animals that belengs to the selected owner
-            """
-            owners_animals = Animal.objects.filter(owner=received_animal_form.cleaned_data['owner'])
-            if len(owners_animals) == 0:
-                owners_animals = None
-
-            return render(request, 'watch_owner.html', {
-                'owner': received_animal_form.cleaned_data['owner'],
-                'success_message': success_message if success_message != "" else None,
-                'error_message': error_message if error_message != "" else None,
-                'owners_animals': owners_animals
-            })
+            owner = received_animal_form.cleaned_data['owner']
+            return _render_watch_owner(request, owner, success_message, error_message)
         else:
-            print(received_animal_form.errors)
+            error_message = str(received_animal_form.errors)
 
     if request.GET:
         watched_owner = WatchOwnerForm(request.GET)
@@ -102,16 +139,7 @@ def watch_owner(request):
             selected_owner_id = watched_owner.cleaned_data["selected_owner_id"]
             owner = Owner.objects.filter(id=selected_owner_id)
             if len(owner) > 0:
-                owner = owner[0]
-
-                owners_animals = Animal.objects.filter(owner=owner)
-                if len(owners_animals) == 0:
-                    owners_animals = None
-
-                return render(request, 'watch_owner.html', {
-                    'owner': owner,
-                    'owners_animals': owners_animals
-                })
+                return _render_watch_owner(request, owner[0], success_message, error_message)
 
     return redirect('/show_owners')
 

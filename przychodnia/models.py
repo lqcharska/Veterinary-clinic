@@ -40,9 +40,12 @@ class Animal(models.Model):
 
 class Bill(models.Model):
     """
-    Bill for all meds needed by selected animal
+    Bill for products bought by owner for specified animal 
     """
-    owner_key = models.ForeignKey(Owner, on_delete=models.CASCADE)
-    animal_key = models.ForeignKey(Animal, on_delete=models.CASCADE)
-    value = models.FloatField()
-    date = models.DateField()
+    owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
+    animal = models.ForeignKey(Animal, on_delete=models.CASCADE)
+    product = models.CharField(max_length=100)
+    date = models.CharField(max_length=100)
+
+    def __str__(self):
+        return 'Animal name %s product %s date %s' % (self.animal.name, self.product, self.date)

@@ -10,9 +10,35 @@
     <h2>{{ owner.name }}</h2>
     <h2>{{ owner.phone }}</h2>
     <h2>{{ owner.address }}</h2>
-    
-    <hr class="mt-2 mb-3"/>
 
+    <hr class="mt-2 mb-3"/>
+    <h3>Buy equiplent</h3>
+
+    <form name="buy_equiplent" action="/watch_owner/" method="post">
+        {% csrf_token %}
+        <input type="hidden" required name="form_name" value="buy_equiplent" /> 
+        <input type="hidden" required name="owner" value="{{ owner.id }}" /> 
+        <select name="product" required>
+            <option></option>
+            <option value="Brit">Brit</option>
+            <option value="Alpha Spirit">Alpha Spirit</option>
+            <option value="Wiejska Zagroda">Wiejska Zagroda</option>
+            <option value="Carnilove">Carnilove</option>
+            <option value="Brit Care">Brit Care</option>
+        </select>
+
+        <select name="animal_id" required>
+            <option></option>
+            {% for animal in owners_animals %}
+                <option value="{{ animal.id }}">{{ animal.name }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="submit" value="Submit"/>
+    </form>
+
+
+    <hr class="mt-2 mb-3"/>
     <h3>Pets</h3>
 
     {% if owners_animals %}
@@ -36,6 +62,7 @@
     <form name="add_animal" action="/watch_owner/" method="post">
         {% csrf_token %}
         <input type="hidden" required name="owner" value="{{ owner.id }}" /> 
+        <input type="hidden" required name="form_name" value="add_animal" /> 
         <input type="text" required placeholder="Name" name="name" />
         <input type="number" required placeholder="Age" name="age" />
         <select name="type" required>
@@ -51,7 +78,26 @@
 
     <hr class="mt-2 mb-3"/>
 
-    <h3>Bills</h3>
+    
+
+    {% if bills %}
+        <h3>Bills</h3>
+        <table class="table">
+            <tr>
+                <th>Animal Name</th>
+                <th>Product</th>
+                <th>Date</th>
+            </tr>
+
+            {% for bill in bills %}
+                <tr>
+                    <td>{{ bill.animal.name }}</td>
+                    <td>{{ bill.product }}</td>
+                    <td>{{ bill.date }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 
     <hr class="mt-2 mb-3"/>
 

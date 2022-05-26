@@ -46,4 +46,8 @@ class AddAnimalForm(models.ModelForm):
         model = Animal
         fields = '__all__'
 
+class BuyEquipmentForm(forms.Form):
+    owner = forms.ModelChoiceField(queryset=Owner.objects.all())
+    animal_id = forms.IntegerField(required=True)
+    product = forms.CharField(max_length=100, required=True)
         

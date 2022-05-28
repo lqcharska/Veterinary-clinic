@@ -58,7 +58,14 @@
                     <td>{{ animal.name }}</td>
                     <td>{{ animal.age }}</td>
                     <td>{{ animal.get_type_display }}</td>
-                    <td><img src="{{ animal.image.url}}" alt="connect" style="max-height:100px"></td>
+
+                    {% if animal.image %}
+                        <td><img src="{{ animal.image.url}}" alt="connect" style="max-height:100px"></td>
+                    {% else %}
+                    <td><img src="/static/przychodnia/hotdog-solid.svg" alt="connect" style="max-height:100px"></td>
+                    {% endif %}
+
+                    
                 </tr>
             {% endfor %}
         </table>

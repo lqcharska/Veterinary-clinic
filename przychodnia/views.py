@@ -1,8 +1,9 @@
+from tkinter import NO
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm, BuyEquipmentForm
+from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm, BuyEquipmentForm, PageSettingsForm
 from przychodnia.models import Animal, Owner, Bill
 
 from datetime import datetime
@@ -53,10 +54,107 @@ def show_owners(request):
      })
 
 
+class Pages:
+    class Button:
+        def __init__(self, text, status, value) -> None:
+            self.text = text
+            self.status = status
+            self.value = value
+    
+    # class ItemsPerPage:
+    #     def __init__(self) -> None:
+    #         self.
+
+    def __init__(self, count: int, name: str) -> None:
+        self.count = count
+        self.buttons = []
+        self.items = []
+        self.items_indexes = []
+        self.ziped_items = []
+        self.name = name
+
+        self.items_per_page = {}
+        self.items_per_page["5"] = ""
+        self.items_per_page["10"] = ""
+        self.items_per_page["15"] = ""
+        self.items_per_page["20"] = ""
+        
+
+
+def get_page_items(items, items_per_page: int, selected_page_number: int, name: str):
+    """
+    selected_page_number counts from 1
+    """
+    total_pages_count = int(int(len(items) / int(items_per_page)) + (1 if (len(items) % items_per_page) > 0 else 0))
+    
+    print(total_pages_count)
+    pages = Pages(total_pages_count, name)
+
+
+    """
+    selected_page_index counts from 0
+    """
+    selected_page_index = selected_page_number - 1
+
+    if selected_page_index > total_pages_count:
+        selected_page_index = total_pages_count
+    
+    if selected_page_index < 0:
+        selected_page_index = 0
+
+    """
+    Get selected items to be shown
+    """
+    start_item_index = selected_page_index * items_per_page
+    stop_item_index = min(len(items), start_item_index + items_per_page)
+    pages.items = items[start_item_index:stop_item_index]
+    pages.items_indexes = list(range(start_item_index + 1, stop_item_index + 1))
+    pages.ziped_items = zip(pages.items, pages.items_indexes)
+    pages.items_per_page[str(items_per_page)] = "selected"
+    print(pages.items_per_page)
+
+    """
+    Create  buttons
+    """
+    if total_pages_count > 0:
+        pages.buttons.append(Pages.Button(text="Preview", 
+                                    status="disabled" if selected_page_number == 1 else "",
+                                    value=selected_page_number-1))    
+        for i in range(total_pages_count):
+            index_on_button = i + 1
+            pages.buttons.append(Pages.Button(text=index_on_button, 
+                                    status="active" if index_on_button==selected_page_number else "", 
+                                    value=index_on_button))
+
+        pages.buttons.append(Pages.Button(text="Next", 
+                            status="disabled" if total_pages_count==selected_page_number else "", 
+                            value=selected_page_number+1))
+
+    
+    return pages
+
+
 def show_bills(request):
+    selected_page_number = 1
+    items_per_page = 3
+
+    if request.GET:
+        page_settings = PageSettingsForm(request.GET)
+        if page_settings.is_valid():
+            temp = page_settings.cleaned_data['selected_page']
+            if temp is not None:
+                selected_page_number = int(temp)
+            
+            temp = page_settings.cleaned_data['items_per_page']
+            if temp is not None:
+                items_per_page = int(temp)
+
     bills = Bill.objects.all()
+
+    items = get_page_items(bills, items_per_page, selected_page_number, "bills")
+
     return render(request, 'show_bills.html', {
-        'bills': bills,
+        'bills_and_pages': items
      })
 
 

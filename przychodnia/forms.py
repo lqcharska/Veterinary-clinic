@@ -50,4 +50,8 @@ class BuyEquipmentForm(forms.Form):
     owner = forms.ModelChoiceField(queryset=Owner.objects.all())
     animal_id = forms.IntegerField(required=True)
     product = forms.CharField(max_length=100, required=True)
+
+class PageSettingsForm(forms.Form):
+    selected_page = forms.IntegerField(required=False, initial=1)
+    items_per_page = forms.IntegerField(required=False, initial=5)
         

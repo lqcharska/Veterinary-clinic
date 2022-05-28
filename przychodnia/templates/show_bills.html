@@ -14,14 +14,43 @@
             <th>Date</th>
         </tr>
 
-        {% for bill in bills %}
+        {% for bill, index in bills_and_pages.ziped_items %}
             <tr>
-                <td>{{ forloop.counter }}</td>
+                <td>{{ index }}</td>
                 <td>{{ bill.owner.name }}</td>
                 <td>{{ bill.animal.name }}</td>
                 <td>{{ bill.product }}</td>
                 <td>{{ bill.date }}</td>
             </tr>
         {% endfor %}
+
+        <form action="/show_bills/" method="get">
+            {% csrf_token %}
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <select  name="items_per_page" required>
+                        {% for value, key in bills_and_pages.items_per_page.items %}
+                            <option class="page-link" value="{{ value }}" {{ key }}>{{ value }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button class="page-link" style="margin-right: 50px;" type="submit">Select</button>
+
+                    {% for button in bills_and_pages.buttons %}
+                        <li class="page-item {{ button.status }}">
+                            <button class="page-link" type="submit" name="selected_page" value="{{ button.value }}">
+                                {{ button.text }}
+                            </button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+
+
+
+
+            
+        </form>
+
     </table>
 {% endblock %}

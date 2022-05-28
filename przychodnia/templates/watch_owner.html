@@ -50,6 +50,7 @@
                 <th>NAME</th>
                 <th>AGE</th>
                 <th>TYPE</th>
+                <th>Image</th>
             </tr>
 
             {% for animal in owners_animals %}
@@ -57,12 +58,13 @@
                     <td>{{ animal.name }}</td>
                     <td>{{ animal.age }}</td>
                     <td>{{ animal.get_type_display }}</td>
+                    <td><img src="{{ animal.image.url}}" alt="connect" style="max-height:100px"></td>
                 </tr>
             {% endfor %}
         </table>
     {% endif %}
 
-    <form id="add_animal" action="/watch_owner/" method="post">
+    <form enctype="multipart/form-data" id="add_animal" action="/watch_owner/" method="post">
         {% csrf_token %}
         <input type="hidden" required name="owner" value="{{ owner.id }}" /> 
         <input type="hidden" required name="form_name" value="add_animal" /> 
@@ -75,8 +77,7 @@
             <option value="h">Hamster</option>
             <option value="g">Guinea pig</option>
         </select>
-
-        <!-- <input type="submit" value="Submit"/> -->
+        <input type="file" name="image" accept="image/*" required="" id="id_image">
     </form>
 
     <button type="submit" form="add_animal" value="Submit">

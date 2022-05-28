@@ -41,6 +41,7 @@ class AddAnimalForm(models.ModelForm):
     age = forms.IntegerField(required=True)
     name = forms.CharField(max_length=30, required=True)
     type = forms.CharField(max_length=100, required=True)
+    image = forms.ImageField()
 
     class Meta:
         model = Animal

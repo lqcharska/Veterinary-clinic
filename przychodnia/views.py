@@ -216,7 +216,8 @@ def watch_owner(request):
         If sb added new animal, the owner is hidden in 'add_animal' form
         Go to 'watch_owner.html' and see the form
         """
-        received_animal_form = AddAnimalForm(request.POST)
+        # Imege upload from: https://djangocentral.com/uploading-images-with-django/
+        received_animal_form = AddAnimalForm(request.POST, request.FILES)
         if received_animal_form.is_valid():
             """
             Try to find an animal with this name, that belongs to the  selected owner
@@ -241,6 +242,7 @@ def watch_owner(request):
             return _render_watch_owner(request, owner, success_message, error_message)
         else:
             error_message = str(received_animal_form.errors)
+            print(str(received_animal_form.errors))
 
     if request.GET:
         watched_owner = WatchOwnerForm(request.GET)

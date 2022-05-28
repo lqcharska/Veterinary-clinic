@@ -5,6 +5,29 @@
 {% block main_content %}
     <h1>Show all animals</h1>
 
+    <form action="/show_animals/" method="get">
+        {% csrf_token %}
+        <nav aria-label="...">
+            <ul class="pagination">
+                <select  name="items_per_page" required>
+                    {% for value, key in animals_and_pages.items_per_page.items %}
+                        <option class="page-link" value="{{ value }}" {{ key }}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+
+                <button class="page-link" style="margin-right: 50px;" type="submit">Select</button>
+
+                {% for button in animals_and_pages.buttons %}
+                    <li class="page-item {{ button.status }}">
+                        <button class="page-link" type="submit" name="selected_page" value="{{ button.value }}">
+                            {{ button.text }}
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>            
+    </form>
+
     <table class="table">
         <tr>
             <th>LP</th>
@@ -14,7 +37,7 @@
             <th>Animal type</th>
         </tr>
 
-        {% for animal in animals %}
+        {% for animal in animals_and_pages.items %}
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ animal.owner.name }}</td>
@@ -24,4 +47,6 @@
             </tr>
         {% endfor %}
     </table>
+
+
 {% endblock %}

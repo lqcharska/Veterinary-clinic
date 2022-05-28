@@ -61,10 +61,6 @@ class Pages:
             self.status = status
             self.value = value
     
-    # class ItemsPerPage:
-    #     def __init__(self) -> None:
-    #         self.
-
     def __init__(self, count: int, name: str) -> None:
         self.count = count
         self.buttons = []
@@ -80,6 +76,22 @@ class Pages:
         self.items_per_page["20"] = ""
         
 
+def _get_pages_settings(request):
+    selected_page_number = 1
+    items_per_page = 5
+
+    if request.GET:
+        page_settings = PageSettingsForm(request.GET)
+        if page_settings.is_valid():
+            temp = page_settings.cleaned_data['selected_page']
+            if temp is not None:
+                selected_page_number = int(temp)
+            
+            temp = page_settings.cleaned_data['items_per_page']
+            if temp is not None:
+                items_per_page = int(temp)
+    
+    return selected_page_number, items_per_page
 
 def get_page_items(items, items_per_page: int, selected_page_number: int, name: str):
     """
@@ -111,7 +123,6 @@ def get_page_items(items, items_per_page: int, selected_page_number: int, name: 
     pages.items_indexes = list(range(start_item_index + 1, stop_item_index + 1))
     pages.ziped_items = zip(pages.items, pages.items_indexes)
     pages.items_per_page[str(items_per_page)] = "selected"
-    print(pages.items_per_page)
 
     """
     Create  buttons
@@ -135,33 +146,22 @@ def get_page_items(items, items_per_page: int, selected_page_number: int, name: 
 
 
 def show_bills(request):
-    selected_page_number = 1
-    items_per_page = 3
-
-    if request.GET:
-        page_settings = PageSettingsForm(request.GET)
-        if page_settings.is_valid():
-            temp = page_settings.cleaned_data['selected_page']
-            if temp is not None:
-                selected_page_number = int(temp)
-            
-            temp = page_settings.cleaned_data['items_per_page']
-            if temp is not None:
-                items_per_page = int(temp)
+    selected_page_number, items_per_page = _get_pages_settings(request)
 
     bills = Bill.objects.all()
 
-    items = get_page_items(bills, items_per_page, selected_page_number, "bills")
-
     return render(request, 'show_bills.html', {
-        'bills_and_pages': items
+        'bills_and_pages': get_page_items(bills, items_per_page, selected_page_number, "bills")
      })
 
 
 def show_animals(request):
+    selected_page_number, items_per_page = _get_pages_settings(request)
+
     animals = Animal.objects.all()
+    
     return render(request, 'show_animals.html', {
-        'animals': animals,
+        'animals_and_pages': get_page_items(animals, items_per_page, selected_page_number, "animals")
      })
 
 

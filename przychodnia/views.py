@@ -8,52 +8,6 @@ from przychodnia.models import Animal, Owner, Bill
 
 from datetime import datetime
 
-def index(request):
-    return render(request, 'home.html', {})
-
-
-def add_owner(request):
-    # print(Owner.objects.all().delete())
-    # print(Bill.objects.all().delete())
-    # print(Animal.objects.all().delete())
-    # Variable to handle form errors
-    received_errors_dictionary = {}
-    error_message = ""
-    success_message = ""
-    if request.POST:
-        received_form = AddOwnerForm(request.POST)
-
-        if received_form.is_valid():
-            if len(Owner.objects.filter(name=received_form.cleaned_data['name'])) > 0:
-                """
-                If user with this data exists, we can not add this data to database
-                """
-                error_message = f"User {received_form.cleaned_data['name']} exists."
-            else:
-                """
-                User not exists, can be added to database
-                """
-                received_form.save()
-                success_message = f"Successfully saved user {received_form.cleaned_data['name']}"
-        else:
-            # TODO this should be handled and message printed to user
-            # received_errors_dictionary = received_form.errors.as_data()
-            error_message = "form is invalid"
-
-    return render(request, 'add_owner.html', {
-        'form': AddOwnerForm(),
-        'success_message': success_message if success_message != "" else None,  # not used for now
-        'error_message': error_message if error_message != "" else None,  # not used for now
-    })
-
-
-def show_owners(request):
-    owners = Owner.objects.all()
-    return render(request, 'show_owners.html', {
-        'owners': owners,
-     })
-
-
 class Pages:
     class Button:
         def __init__(self, text, status, value) -> None:
@@ -74,26 +28,8 @@ class Pages:
         self.items_per_page["10"] = ""
         self.items_per_page["15"] = ""
         self.items_per_page["20"] = ""
-        
 
-def _get_pages_settings(request):
-    selected_page_number = 1
-    items_per_page = 5
-
-    if request.GET:
-        page_settings = PageSettingsForm(request.GET)
-        if page_settings.is_valid():
-            temp = page_settings.cleaned_data['selected_page']
-            if temp is not None:
-                selected_page_number = int(temp)
-            
-            temp = page_settings.cleaned_data['items_per_page']
-            if temp is not None:
-                items_per_page = int(temp)
-    
-    return selected_page_number, items_per_page
-
-def get_page_items(items, items_per_page: int, selected_page_number: int, name: str):
+def _get_page_items(items, items_per_page: int, selected_page_number: int, name: str):
     """
     selected_page_number counts from 1
     """
@@ -145,24 +81,85 @@ def get_page_items(items, items_per_page: int, selected_page_number: int, name: 
     return pages
 
 
+def _get_pages_settings(request):
+    selected_page_number = 1
+    items_per_page = 5
+
+    if request.GET:
+        page_settings = PageSettingsForm(request.GET)
+        if page_settings.is_valid():
+            temp = page_settings.cleaned_data['selected_page']
+            if temp is not None:
+                selected_page_number = int(temp)
+            
+            temp = page_settings.cleaned_data['items_per_page']
+            if temp is not None:
+                items_per_page = int(temp)
+    
+    return selected_page_number, items_per_page
+
+def show_owners(request):
+    selected_page_number, items_per_page = _get_pages_settings(request)
+    owners = Owner.objects.all()
+    return render(request, 'show_owners.html', {
+        'owners_and_pages': _get_page_items(owners, items_per_page, selected_page_number, "owners")
+     })
+
+
 def show_bills(request):
     selected_page_number, items_per_page = _get_pages_settings(request)
-
     bills = Bill.objects.all()
-
     return render(request, 'show_bills.html', {
-        'bills_and_pages': get_page_items(bills, items_per_page, selected_page_number, "bills")
+        'bills_and_pages': _get_page_items(bills, items_per_page, selected_page_number, "bills")
      })
 
 
 def show_animals(request):
     selected_page_number, items_per_page = _get_pages_settings(request)
-
     animals = Animal.objects.all()
-    
     return render(request, 'show_animals.html', {
-        'animals_and_pages': get_page_items(animals, items_per_page, selected_page_number, "animals")
+        'animals_and_pages': _get_page_items(animals, items_per_page, selected_page_number, "animals")
      })
+
+
+def index(request):
+    return render(request, 'home.html', {})
+
+
+def add_owner(request):
+    # print(Owner.objects.all().delete())
+    # print(Bill.objects.all().delete())
+    # print(Animal.objects.all().delete())
+    # Variable to handle form errors
+    received_errors_dictionary = {}
+    error_message = ""
+    success_message = ""
+    if request.POST:
+        received_form = AddOwnerForm(request.POST)
+
+        if received_form.is_valid():
+            if len(Owner.objects.filter(name=received_form.cleaned_data['name'])) > 0:
+                """
+                If user with this data exists, we can not add this data to database
+                """
+                error_message = f"User {received_form.cleaned_data['name']} exists."
+            else:
+                """
+                User not exists, can be added to database
+                """
+                received_form.save()
+                success_message = f"Successfully saved user {received_form.cleaned_data['name']}"
+        else:
+            # TODO this should be handled and message printed to user
+            # received_errors_dictionary = received_form.errors.as_data()
+            error_message = "form is invalid"
+
+    return render(request, 'add_owner.html', {
+        'form': AddOwnerForm(),
+        'success_message': success_message if success_message != "" else None,  # not used for now
+        'error_message': error_message if error_message != "" else None,  # not used for now
+    })
+
 
 
 def _render_watch_owner(request, owner, success_message, error_message):

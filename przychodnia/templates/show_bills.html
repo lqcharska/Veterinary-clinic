@@ -5,6 +5,8 @@
 {% block main_content %}
     <h1>Show all bills</h1>
 
+    
+
     <form action="/show_bills/" method="get">
         {% csrf_token %}
         <nav aria-label="...">
@@ -48,4 +50,12 @@
         {% endfor %}
 
     </table>
+
+    
+    <form method="get" action="/download_bills/">
+        {% csrf_token %}
+        <input type="text" hidden name="selected_page" value="{{ download_info.selected_page_number }}" >
+        <input type="text" hidden name="items_per_page" value="{{ download_info.items_per_page }}" >
+        <input type="submit" class="page-link" name="submit" value="Download selected">
+    </form>
 {% endblock %}

@@ -1,5 +1,6 @@
 from tkinter import NO
 from django.core.exceptions import ValidationError
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -7,6 +8,8 @@ from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm, BuyEq
 from przychodnia.models import Animal, Owner, Bill
 
 from datetime import datetime
+
+import csv
 
 class Pages:
     class Button:
@@ -22,6 +25,8 @@ class Pages:
         self.items_indexes = []
         self.ziped_items = []
         self.name = name
+        self.start_item_index = 0
+        self.stop_item_index = 0
 
         self.items_per_page = {}
         self.items_per_page["5"] = ""
@@ -55,6 +60,8 @@ def _get_page_items(items, items_per_page: int, selected_page_number: int, name:
     """
     start_item_index = selected_page_index * items_per_page
     stop_item_index = min(len(items), start_item_index + items_per_page)
+    pages.start_item_index = start_item_index
+    pages.stop_item_index = stop_item_index
     pages.items = items[start_item_index:stop_item_index]
     pages.items_indexes = list(range(start_item_index + 1, stop_item_index + 1))
     pages.ziped_items = zip(pages.items, pages.items_indexes)
@@ -105,14 +112,49 @@ def show_owners(request):
         'owners_and_pages': _get_page_items(owners, items_per_page, selected_page_number, "owners")
      })
 
-
 def show_bills(request):
     selected_page_number, items_per_page = _get_pages_settings(request)
     bills = Bill.objects.all()
-    return render(request, 'show_bills.html', {
-        'bills_and_pages': _get_page_items(bills, items_per_page, selected_page_number, "bills")
-     })
 
+    download_info = {'selected_page_number': selected_page_number, 'items_per_page': items_per_page}
+    # download_info = zip(selected_page_number, items_per_page)
+    return render(request, 'show_bills.html', {
+        'bills_and_pages': _get_page_items(bills, items_per_page, selected_page_number, "bills"),
+        'download_info': download_info
+    })
+
+
+def download_bills(request):
+    # select 
+    selected_page_number, items_per_page = _get_pages_settings(request)
+
+    # get only items which are on page
+    page_items = _get_page_items(Bill.objects.all(), items_per_page, selected_page_number, "bills")
+
+    # Create temporary file
+    with open('temp.csv', 'w', encoding='UTF8', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+        bills = Bill.objects.all()[page_items.start_item_index:page_items.stop_item_index]
+        writer.writerow(['Index', 'Owner', 'Animal', 'Product', 'Date'])
+        index = page_items.start_item_index + 1
+        for bill in bills:
+            owner = bill.owner.name
+            animal = bill.animal.name
+            product = bill.product
+            date = bill.date
+
+            writer.writerow([index, owner, animal, product, date])
+            index = index + 1
+
+        csv_file.close()
+
+    # read and create response
+    with open('temp.csv', 'r') as f:
+        file_data = f.read()
+
+    response = HttpResponse(file_data, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="temp.csv"'
+    return response
 
 def show_animals(request):
     selected_page_number, items_per_page = _get_pages_settings(request)
@@ -192,7 +234,6 @@ def watch_owner(request):
     success_message = ""
     error_message = ""
     if request.POST and request.POST.get("form_name") == 'buy_equiplent':
-        print("received buy fprm")
         received_buy_form = BuyEquipmentForm(request.POST)
         if received_buy_form.is_valid():
             owner = received_buy_form.cleaned_data["owner"]

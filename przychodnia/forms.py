@@ -55,4 +55,6 @@ class BuyEquipmentForm(forms.Form):
 class PageSettingsForm(forms.Form):
     selected_page = forms.IntegerField(required=False, initial=1)
     items_per_page = forms.IntegerField(required=False, initial=5)
+    start_time = forms.DateTimeField(required=False)
+    stop_time = forms.DateTimeField(required=False)
         

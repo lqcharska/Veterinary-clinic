@@ -130,3 +130,7 @@ MEDIA_URL = '/media/'
 
 # Path where media is stored
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+# https://stackoverflow.com/questions/18622007/runtimewarning-datetimefield-received-a-naive-datetime
+# To avoid problem with timezones
+USE_TZ = False

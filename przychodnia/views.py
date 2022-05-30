@@ -1,3 +1,4 @@
+from posixpath import split
 from tkinter import NO
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
@@ -6,6 +7,8 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm, BuyEquipmentForm, PageSettingsForm
 from przychodnia.models import Animal, Owner, Bill
+
+from django.utils.dateparse import parse_date
 
 from datetime import datetime
 
@@ -87,46 +90,86 @@ def _get_page_items(items, items_per_page: int, selected_page_number: int, name:
     
     return pages
 
+def _get_date_items(items, start_time: str, stop_time: str):
+    items = items.filter(date__lte=stop_time)
 
-def _get_pages_settings(request):
+    return items
+
+def _get_filter_info(request):
     selected_page_number = 1
     items_per_page = 5
-
+    start_time = datetime.min
+    stop_time = datetime.now()
+    
     if request.GET:
         page_settings = PageSettingsForm(request.GET)
         if page_settings.is_valid():
             temp = page_settings.cleaned_data['selected_page']
             if temp is not None:
                 selected_page_number = int(temp)
+            else:
+                selected_page_number = 1
             
             temp = page_settings.cleaned_data['items_per_page']
             if temp is not None:
                 items_per_page = int(temp)
+            else:
+                items_per_page = 5
+
+            temp = page_settings.cleaned_data['start_time']
+            if temp is not None:
+                start_time = temp
+            else:
+                start_time = datetime.min
+
+            temp = page_settings.cleaned_data['stop_time']
+            if temp is not None:
+                stop_time = temp
+            else:
+                stop_time = datetime.now()
+        else:
+            print("Errors:", page_settings.errors)
     
-    return selected_page_number, items_per_page
+    # start_time and stop_time is in format "2022-05-29 20:57:14.872624"
+    # we want only date
+    # stop_time, _ = stop_time.split(' ')
+    # start_time, _ = start_time.split(' ')
+
+    # return selected_page_number, items_per_page, start_time, stop_time
+    return {'selected_page_number': selected_page_number,
+            'items_per_page': items_per_page,
+            'start_time': start_time,
+            'stop_time': stop_time
+    }
 
 def show_owners(request):
-    selected_page_number, items_per_page = _get_pages_settings(request)
+    settings = _get_filter_info(request)
+    selected_page_number = settings['selected_page_number']
+    items_per_page = settings['items_per_page']
     owners = Owner.objects.all()
     return render(request, 'show_owners.html', {
         'owners_and_pages': _get_page_items(owners, items_per_page, selected_page_number, "owners")
      })
 
 def show_bills(request):
-    selected_page_number, items_per_page = _get_pages_settings(request)
-    bills = Bill.objects.all()
+    filter_info = _get_filter_info(request)
+    selected_page_number = filter_info['selected_page_number']
+    items_per_page = filter_info['items_per_page']
 
-    download_info = {'selected_page_number': selected_page_number, 'items_per_page': items_per_page}
-    # download_info = zip(selected_page_number, items_per_page)
+    bills = Bill.objects.filter(date__gte=filter_info['start_time'], # greater or equal then
+                                date__lte=filter_info['stop_time']) # less or equal then
+
     return render(request, 'show_bills.html', {
         'bills_and_pages': _get_page_items(bills, items_per_page, selected_page_number, "bills"),
-        'download_info': download_info
+        'filter_info': filter_info
     })
 
 
 def download_bills(request):
     # select 
-    selected_page_number, items_per_page = _get_pages_settings(request)
+    settings = _get_filter_info(request)
+    selected_page_number = settings['selected_page_number']
+    items_per_page = settings['items_per_page']
 
     # get only items which are on page
     page_items = _get_page_items(Bill.objects.all(), items_per_page, selected_page_number, "bills")
@@ -156,8 +199,11 @@ def download_bills(request):
     response['Content-Disposition'] = 'attachment; filename="temp.csv"'
     return response
 
+
 def show_animals(request):
-    selected_page_number, items_per_page = _get_pages_settings(request)
+    settings = _get_filter_info(request)
+    selected_page_number = settings['selected_page_number']
+    items_per_page = settings['items_per_page']
     animals = Animal.objects.all()
     return render(request, 'show_animals.html', {
         'animals_and_pages': _get_page_items(animals, items_per_page, selected_page_number, "animals")
@@ -203,7 +249,6 @@ def add_owner(request):
     })
 
 
-
 def _render_watch_owner(request, owner, success_message, error_message):
     """
     Render page for specified owner with messages
@@ -243,7 +288,7 @@ def watch_owner(request):
             bill_model = Bill(owner=owner,
                             animal=Animal.objects.filter(id=animal_id)[0],
                             product=product,
-                            date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+                            date=datetime.now())
             
             bill_model.save()
 

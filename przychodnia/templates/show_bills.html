@@ -26,6 +26,15 @@
                         </button>
                     </li>
                 {% endfor %}
+
+                <li>
+                    <!-- https://stackoverflow.com/questions/63099974/django-template-convert-datetime-local-format -->
+                    <input class="page-link" style="margin-left: 50px;" type="datetime-local" name="start_time" value="{{filter_info.start_time|date:'Y-m-d'}}T{{filter_info.start_time|time:'H:i'}}">
+                </li>
+
+                <li>
+                    <input class="page-link" style="margin-left: 50px;" type="datetime-local" name="stop_time" value="{{filter_info.stop_time|date:'Y-m-d'}}T{{filter_info.stop_time|time:'H:i'}}">
+                </li>
             </ul>
         </nav>            
     </form>
@@ -54,8 +63,10 @@
     
     <form method="get" action="/download_bills/">
         {% csrf_token %}
-        <input type="text" hidden name="selected_page" value="{{ download_info.selected_page_number }}" >
-        <input type="text" hidden name="items_per_page" value="{{ download_info.items_per_page }}" >
+        <input type="text" hidden name="selected_page" value="{{ filter_info.selected_page_number }}" >
+        <input type="text" hidden name="items_per_page" value="{{ filter_info.items_per_page }}" >
+        <input type="text" hidden name="start_time" value="{{ filter_info.start_time }}" >
+        <input type="text" hidden name="stop_time" value="{{ filter_info.stop_time }}" >
         <input type="submit" class="page-link" name="submit" value="Download selected">
     </form>
 {% endblock %}

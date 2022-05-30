@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm, BuyEquipmentForm, PageSettingsForm
+from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm, BuyEquipmentForm, FilterInfoForm
 from przychodnia.models import Animal, Owner, Bill
 
 from django.utils.dateparse import parse_date
@@ -96,9 +96,10 @@ def _get_filter_info(request):
     items_per_page = 5
     start_time = datetime.min
     stop_time = datetime.now()
+    text_query= ""
     
     if request.GET:
-        page_settings = PageSettingsForm(request.GET)
+        page_settings = FilterInfoForm(request.GET)
         if page_settings.is_valid():
             temp = page_settings.cleaned_data['selected_page']
             if temp is not None:
@@ -123,13 +124,20 @@ def _get_filter_info(request):
                 stop_time = temp
             else:
                 stop_time = datetime.now()
+
+            temp = page_settings.cleaned_data['text_query']
+            if temp is not None:
+                text_query = str(temp)
+            else:
+                text_query = ""
         else:
             print("Errors:", page_settings.errors)
 
     return {'selected_page_number': selected_page_number,
             'items_per_page': items_per_page,
             'start_time': start_time,
-            'stop_time': stop_time
+            'stop_time': stop_time,
+            'text_query': text_query
     }
 
 def show_owners(request):
@@ -146,7 +154,10 @@ def show_bills(request):
     selected_page_number = filter_info['selected_page_number']
     items_per_page = filter_info['items_per_page']
 
-    bills = Bill.objects.filter(date__gte=filter_info['start_time'], # greater or equal then
+    print("text_query", filter_info['text_query'])
+
+    bills = Bill.objects.filter(owner__name__icontains=filter_info['text_query'],
+                                date__gte=filter_info['start_time'], # greater or equal then
                                 date__lte=filter_info['stop_time']) # less or equal then
 
     return render(request, 'show_bills.html', {

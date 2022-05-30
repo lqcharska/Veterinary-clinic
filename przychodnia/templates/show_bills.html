@@ -35,6 +35,10 @@
                 <li>
                     <input class="page-link" style="margin-left: 50px;" type="datetime-local" name="stop_time" value="{{filter_info.stop_time|date:'Y-m-d'}}T{{filter_info.stop_time|time:'H:i'}}">
                 </li>
+
+                <li>
+                    <input class="page-link" style="margin-left: 50px;" type="text" name="text_query" value="{{filter_info.text_query}}" placeholder="Owner query">
+                </li>
             </ul>
         </nav>            
     </form>

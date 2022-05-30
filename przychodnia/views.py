@@ -99,39 +99,39 @@ def _get_filter_info(request):
     text_query= ""
     
     if request.GET:
-        page_settings = FilterInfoForm(request.GET)
-        if page_settings.is_valid():
-            temp = page_settings.cleaned_data['selected_page']
+        filter_info = FilterInfoForm(request.GET)
+        if filter_info.is_valid():
+            temp = filter_info.cleaned_data['selected_page']
             if temp is not None:
                 selected_page_number = int(temp)
             else:
                 selected_page_number = 1
             
-            temp = page_settings.cleaned_data['items_per_page']
+            temp = filter_info.cleaned_data['items_per_page']
             if temp is not None:
                 items_per_page = int(temp)
             else:
                 items_per_page = 5
 
-            temp = page_settings.cleaned_data['start_time']
+            temp = filter_info.cleaned_data['start_time']
             if temp is not None:
                 start_time = temp
             else:
                 start_time = datetime.min
 
-            temp = page_settings.cleaned_data['stop_time']
+            temp = filter_info.cleaned_data['stop_time']
             if temp is not None:
                 stop_time = temp
             else:
                 stop_time = datetime.now()
 
-            temp = page_settings.cleaned_data['text_query']
+            temp = filter_info.cleaned_data['text_query']
             if temp is not None:
                 text_query = str(temp)
             else:
                 text_query = ""
         else:
-            print("Errors:", page_settings.errors)
+            print("Errors:", filter_info.errors)
 
     return {'selected_page_number': selected_page_number,
             'items_per_page': items_per_page,
@@ -153,8 +153,6 @@ def show_bills(request):
     filter_info = _get_filter_info(request)
     selected_page_number = filter_info['selected_page_number']
     items_per_page = filter_info['items_per_page']
-
-    print("text_query", filter_info['text_query'])
 
     bills = Bill.objects.filter(owner__name__icontains=filter_info['text_query'],
                                 date__gte=filter_info['start_time'], # greater or equal then

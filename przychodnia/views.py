@@ -90,10 +90,6 @@ def _get_page_items(items, items_per_page: int, selected_page_number: int, name:
     
     return pages
 
-def _get_date_items(items, start_time: str, stop_time: str):
-    items = items.filter(date__lte=stop_time)
-
-    return items
 
 def _get_filter_info(request):
     selected_page_number = 1
@@ -129,13 +125,7 @@ def _get_filter_info(request):
                 stop_time = datetime.now()
         else:
             print("Errors:", page_settings.errors)
-    
-    # start_time and stop_time is in format "2022-05-29 20:57:14.872624"
-    # we want only date
-    # stop_time, _ = stop_time.split(' ')
-    # start_time, _ = start_time.split(' ')
 
-    # return selected_page_number, items_per_page, start_time, stop_time
     return {'selected_page_number': selected_page_number,
             'items_per_page': items_per_page,
             'start_time': start_time,
@@ -143,12 +133,12 @@ def _get_filter_info(request):
     }
 
 def show_owners(request):
-    settings = _get_filter_info(request)
-    selected_page_number = settings['selected_page_number']
-    items_per_page = settings['items_per_page']
-    owners = Owner.objects.all()
+    filter_info = _get_filter_info(request)
     return render(request, 'show_owners.html', {
-        'owners_and_pages': _get_page_items(owners, items_per_page, selected_page_number, "owners")
+        'owners_and_pages': _get_page_items(Owner.objects.all(), 
+                                            filter_info['items_per_page'], 
+                                            filter_info['selected_page_number'], 
+                                            "owners")
      })
 
 def show_bills(request):
@@ -167,12 +157,13 @@ def show_bills(request):
 
 def download_bills(request):
     # select 
-    settings = _get_filter_info(request)
-    selected_page_number = settings['selected_page_number']
-    items_per_page = settings['items_per_page']
+    filter_info = _get_filter_info(request)
 
-    # get only items which are on page
-    page_items = _get_page_items(Bill.objects.all(), items_per_page, selected_page_number, "bills")
+    bills = Bill.objects.filter(date__gte=filter_info['start_time'], # greater or equal then
+                                date__lte=filter_info['stop_time']) # less or equal then
+
+    # get only items which should be on the page
+    page_items = _get_page_items(bills, filter_info['items_per_page'], filter_info['selected_page_number'], "bills")
 
     # Create temporary file
     with open('temp.csv', 'w', encoding='UTF8', newline='') as csv_file:
@@ -184,7 +175,7 @@ def download_bills(request):
             owner = bill.owner.name
             animal = bill.animal.name
             product = bill.product
-            date = bill.date
+            date = str(bill.date.strftime("%Y-%m-%d %H:%M"))
 
             writer.writerow([index, owner, animal, product, date])
             index = index + 1

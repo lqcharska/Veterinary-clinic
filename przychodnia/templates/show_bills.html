@@ -65,8 +65,8 @@
         {% csrf_token %}
         <input type="text" hidden name="selected_page" value="{{ filter_info.selected_page_number }}" >
         <input type="text" hidden name="items_per_page" value="{{ filter_info.items_per_page }}" >
-        <input type="text" hidden name="start_time" value="{{ filter_info.start_time }}" >
-        <input type="text" hidden name="stop_time" value="{{ filter_info.stop_time }}" >
+        <input type="datetime-local" hidden name="start_time" value="{{filter_info.start_time|date:'Y-m-d'}}T{{filter_info.start_time|time:'H:i'}}" >
+        <input type="datetime-local" hidden name="stop_time" value="{{filter_info.stop_time|date:'Y-m-d'}}T{{filter_info.stop_time|time:'H:i'}}">
         <input type="submit" class="page-link" name="submit" value="Download selected">
     </form>
 {% endblock %}

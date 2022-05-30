@@ -11,9 +11,9 @@ urlpatterns = [
     path('add_owner/', views.add_owner),
     path('show_owners/', views.show_owners),
     path('show_animals/', views.show_animals),
-    path('show_bills/', views.show_bills),
+    path('show_mt/', views.show_mt),
     path('watch_owner/', views.watch_owner),
-    path('download_bills/', views.download_bills),
+    path('download_mt/', views.download_mt),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 

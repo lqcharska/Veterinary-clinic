@@ -1,13 +1,13 @@
 {% extends "main_template.html" %}
 
-{% block title %}Show bills{% endblock %}
+{% block title %}Show medical treatments{% endblock %}
 
 {% block main_content %}
-    <h1>Show all bills</h1>
+    <h1>Show all medical treatments</h1>
 
     
 
-    <form action="/show_bills/" method="get">
+    <form action="/show_mt/" method="get">
         {% csrf_token %}
         <nav aria-label="...">
             <ul class="pagination">
@@ -69,7 +69,7 @@
     </table>
 
     
-    <form method="get" action="/download_bills/">
+    <form method="get" action="/download_mt/">
         {% csrf_token %}
         <input type="text" hidden name="selected_page" value="{{ filter_info.selected_page_number }}" >
         <input type="text" hidden name="items_per_page" value="{{ filter_info.items_per_page }}" >

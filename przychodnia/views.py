@@ -149,7 +149,7 @@ def show_owners(request):
                                             "owners")
      })
 
-def show_bills(request):
+def show_mt(request):
     filter_info = _get_filter_info(request)
     selected_page_number = filter_info['selected_page_number']
     items_per_page = filter_info['items_per_page']
@@ -158,13 +158,13 @@ def show_bills(request):
                                 date__gte=filter_info['start_time'], # greater or equal then
                                 date__lte=filter_info['stop_time']) # less or equal then
 
-    return render(request, 'show_bills.html', {
-        'mt_and_pages': _get_page_items(medical_treatments, items_per_page, selected_page_number, "bills"),
+    return render(request, 'show_medical_treatments.html', {
+        'mt_and_pages': _get_page_items(medical_treatments, items_per_page, selected_page_number, "mt"),
         'filter_info': filter_info
     })
 
 
-def download_bills(request):
+def download_mt(request):
     # select 
     filter_info = _get_filter_info(request)
 
@@ -172,21 +172,21 @@ def download_bills(request):
                                 date__lte=filter_info['stop_time']) # less or equal then
 
     # get only items which should be on the page
-    page_items = _get_page_items(medical_treatments, filter_info['items_per_page'], filter_info['selected_page_number'], "bills")
+    page_items = _get_page_items(medical_treatments, filter_info['items_per_page'], filter_info['selected_page_number'], "mt")
 
     # Create temporary file
     with open('temp.csv', 'w', encoding='UTF8', newline='') as csv_file:
         writer = csv.writer(csv_file)
-        bills = MedicalTreatment.objects.all()[page_items.start_item_index:page_items.stop_item_index]
+        mt_models = MedicalTreatment.objects.all()[page_items.start_item_index:page_items.stop_item_index]
         writer.writerow(['Index', 'Owner', 'Animal', 'Vet name', 'Tag', 'Description','Date'])
         index = page_items.start_item_index + 1
-        for bill in bills:
-            owner = bill.owner.name
-            animal = bill.animal.name
-            vet_name = bill.vet_name
-            tag = bill.tag
-            description = bill.description
-            date = str(bill.date.strftime("%Y-%m-%d %H:%M"))
+        for mt_model in mt_models:
+            owner = mt_model.owner.name
+            animal = mt_model.animal.name
+            vet_name = mt_model.vet_name
+            tag = mt_model.tag
+            description = mt_model.description
+            date = str(mt_model.date.strftime("%Y-%m-%d %H:%M"))
 
             writer.writerow([index, owner, animal, vet_name, tag, description, date])
             index = index + 1
@@ -218,7 +218,7 @@ def index(request):
 
 def add_owner(request):
     # print(Owner.objects.all().delete())
-    # print(Bill.objects.all().delete())
+    # print(MedicalTreatment.objects.all().delete())
     # print(Animal.objects.all().delete())
     # Variable to handle form errors
     received_errors_dictionary = {}
@@ -257,7 +257,7 @@ def _render_watch_owner(request, owner, success_message, error_message):
     """
 
     """
-    Find all bills requested by owner
+    Find all medical treatments requested by owner
     """
     medical_treatments = MedicalTreatment.objects.filter(owner=owner)
     print(medical_treatments)

@@ -12,20 +12,15 @@
     <h2>{{ owner.address }}</h2>
 
     <hr class="mt-2 mb-3"/>
-    <h3>Buy equiplent</h3>
+    <h3>Register medical treatment for animal</h3>
 
-    <form id="buy_equiplent" action="/watch_owner/" method="post">
+    <form id="register_medical_treatments" action="/watch_owner/" method="post">
         {% csrf_token %}
-        <input type="hidden" required name="form_name" value="buy_equiplent" /> 
+        <input type="hidden" required name="form_name" value="register_medical_treatments" /> 
         <input type="hidden" required name="owner" value="{{ owner.id }}" /> 
-        <select name="product" required>
-            <option></option>
-            <option value="Brit">Brit</option>
-            <option value="Alpha Spirit">Alpha Spirit</option>
-            <option value="Wiejska Zagroda">Wiejska Zagroda</option>
-            <option value="Carnilove">Carnilove</option>
-            <option value="Brit Care">Brit Care</option>
-        </select>
+        <input type="text" placeholder="Vet name" required name="vet_name" >
+        <input type="text" placeholder="Tag" required name="tag" >
+        <input type="text" placeholder="Description" required name="description" >
 
         <select name="animal_id" required>
             <option></option>
@@ -33,11 +28,9 @@
                 <option value="{{ animal.id }}">{{ animal.name }}</option>
             {% endfor %}
         </select>
-
-        <!-- <input type="submit" value="Submit"/> -->
     </form>
 
-    <button type="submit" form="buy_equiplent" value="Submit">
+    <button type="submit" form="register_medical_treatments" value="Submit">
         <i class="fa-solid fa-paper-plane"></i> Submit
     </button>
 
@@ -93,22 +86,24 @@
 
     <hr class="mt-2 mb-3"/>
 
-    
-
-    {% if bills %}
-        <h3>Bills</h3>
+    {% if medical_treatments %}
+        <h3>Animals' medical treatments</h3>
         <table class="table">
             <tr>
                 <th>Animal Name</th>
-                <th>Product</th>
+                <th>Vet name</th>
+                <th>Tag</th>
+                <th>Description</th>
                 <th>Date</th>
             </tr>
 
-            {% for bill in bills %}
+            {% for mt in medical_treatments %}
                 <tr>
-                    <td>{{ bill.animal.name }}</td>
-                    <td>{{ bill.product }}</td>
-                    <td>{{ bill.date }}</td>
+                    <td>{{ mt.animal.name }}</td>
+                    <td>{{ mt.vet_name }}</td>
+                    <td>{{ mt.tag }}</td>
+                    <td>{{ mt.description }}</td>
+                    <td>{{ mt.date }}</td>
                 </tr>
             {% endfor %}
         </table>

@@ -47,10 +47,12 @@ class AddAnimalForm(models.ModelForm):
         model = Animal
         fields = '__all__'
 
-class BuyEquipmentForm(forms.Form):
+class MedicalTreatmentFrom(forms.Form):
     owner = forms.ModelChoiceField(queryset=Owner.objects.all())
     animal_id = forms.IntegerField(required=True)
-    product = forms.CharField(max_length=100, required=True)
+    vet_name = forms.CharField(max_length=100)
+    tag = forms.CharField(max_length=100)
+    description = forms.CharField(max_length=2000)
 
 class FilterInfoForm(forms.Form):
     selected_page = forms.IntegerField(required=False, initial=1)

@@ -55,14 +55,10 @@ class Animal(models.Model):
         return 'name: %s, age: %s, type: %s' % (self.name, self.age, self.type)
 
 
-class Bill(models.Model):
-    """
-    Bill for products bought by owner for specified animal 
-    """
+class MedicalTreatment(models.Model):
     owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
     animal = models.ForeignKey(Animal, on_delete=models.CASCADE)
-    product = models.CharField(max_length=100)
+    vet_name = models.CharField(max_length=100)
+    tag = models.CharField(max_length=100)
+    description = models.CharField(max_length=2000)
     date = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return 'Animal name %s product %s date %s' % (self.animal.name, self.product, self.date)

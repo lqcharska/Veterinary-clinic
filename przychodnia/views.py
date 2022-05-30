@@ -5,8 +5,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm, BuyEquipmentForm, FilterInfoForm
-from przychodnia.models import Animal, Owner, Bill
+from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm, MedicalTreatmentFrom, FilterInfoForm
+from przychodnia.models import Animal, Owner, MedicalTreatment
 
 from django.utils.dateparse import parse_date
 
@@ -154,12 +154,12 @@ def show_bills(request):
     selected_page_number = filter_info['selected_page_number']
     items_per_page = filter_info['items_per_page']
 
-    bills = Bill.objects.filter(owner__name__icontains=filter_info['text_query'],
+    medical_treatments = MedicalTreatment.objects.filter(owner__name__icontains=filter_info['text_query'],
                                 date__gte=filter_info['start_time'], # greater or equal then
                                 date__lte=filter_info['stop_time']) # less or equal then
 
     return render(request, 'show_bills.html', {
-        'bills_and_pages': _get_page_items(bills, items_per_page, selected_page_number, "bills"),
+        'mt_and_pages': _get_page_items(medical_treatments, items_per_page, selected_page_number, "bills"),
         'filter_info': filter_info
     })
 
@@ -168,25 +168,27 @@ def download_bills(request):
     # select 
     filter_info = _get_filter_info(request)
 
-    bills = Bill.objects.filter(date__gte=filter_info['start_time'], # greater or equal then
+    medical_treatments = MedicalTreatment.objects.filter(date__gte=filter_info['start_time'], # greater or equal then
                                 date__lte=filter_info['stop_time']) # less or equal then
 
     # get only items which should be on the page
-    page_items = _get_page_items(bills, filter_info['items_per_page'], filter_info['selected_page_number'], "bills")
+    page_items = _get_page_items(medical_treatments, filter_info['items_per_page'], filter_info['selected_page_number'], "bills")
 
     # Create temporary file
     with open('temp.csv', 'w', encoding='UTF8', newline='') as csv_file:
         writer = csv.writer(csv_file)
-        bills = Bill.objects.all()[page_items.start_item_index:page_items.stop_item_index]
-        writer.writerow(['Index', 'Owner', 'Animal', 'Product', 'Date'])
+        bills = MedicalTreatment.objects.all()[page_items.start_item_index:page_items.stop_item_index]
+        writer.writerow(['Index', 'Owner', 'Animal', 'Vet name', 'Tag', 'Description','Date'])
         index = page_items.start_item_index + 1
         for bill in bills:
             owner = bill.owner.name
             animal = bill.animal.name
-            product = bill.product
+            vet_name = bill.vet_name
+            tag = bill.tag
+            description = bill.description
             date = str(bill.date.strftime("%Y-%m-%d %H:%M"))
 
-            writer.writerow([index, owner, animal, product, date])
+            writer.writerow([index, owner, animal, vet_name, tag, description, date])
             index = index + 1
 
         csv_file.close()
@@ -257,7 +259,8 @@ def _render_watch_owner(request, owner, success_message, error_message):
     """
     Find all bills requested by owner
     """
-    bills = Bill.objects.filter(owner=owner)
+    medical_treatments = MedicalTreatment.objects.filter(owner=owner)
+    print(medical_treatments)
 
     """
     Find all animals that belengs to the selected owner
@@ -271,30 +274,36 @@ def _render_watch_owner(request, owner, success_message, error_message):
         'success_message': success_message if success_message != "" else None,
         'error_message': error_message if error_message != "" else None,
         'owners_animals': owners_animals,
-        'bills': bills if len(bills) > 0 else None,
+        'medical_treatments': medical_treatments if len(medical_treatments) > 0 else None,
     })
 
 
 def watch_owner(request):
     success_message = ""
     error_message = ""
-    if request.POST and request.POST.get("form_name") == 'buy_equiplent':
-        received_buy_form = BuyEquipmentForm(request.POST)
-        if received_buy_form.is_valid():
-            owner = received_buy_form.cleaned_data["owner"]
-            animal_id = received_buy_form.cleaned_data["animal_id"]
-            product = received_buy_form.cleaned_data["product"]
+    if request.POST and request.POST.get("form_name") == 'register_medical_treatments':
+        received_rmt_form = MedicalTreatmentFrom(request.POST)
+        if received_rmt_form.is_valid():
+            owner = received_rmt_form.cleaned_data["owner"]
+            animal_id = received_rmt_form.cleaned_data["animal_id"]
+            vet_name = received_rmt_form.cleaned_data["vet_name"]
+            tag = received_rmt_form.cleaned_data["tag"]
+            description = received_rmt_form.cleaned_data["description"]
 
-            bill_model = Bill(owner=owner,
+            mt_model = MedicalTreatment(owner=owner,
                             animal=Animal.objects.filter(id=animal_id)[0],
-                            product=product,
+                            vet_name=vet_name,
+                            tag=tag,
+                            description=description,
                             date=datetime.now())
             
-            bill_model.save()
+            mt_model.save()
+
+            success_message = "Succesfully added medical treatment"
 
             return _render_watch_owner(request, owner, success_message, error_message)
         else:
-            error_message = str(received_buy_form.errors)
+            error_message = str(received_rmt_form.errors)
     
     if request.POST and request.POST.get("form_name") == 'add_animal':
         """

@@ -31,8 +31,8 @@
     <table class="table">
         <tr>
             <th>LP</th>
-            <th>Owner name</th>
             <th>Animal name</th>
+            <th>Owner name</th>
             <th>Animal age</th>
             <th>Animal type</th>
         </tr>
@@ -40,8 +40,8 @@
         {% for animal in animals_and_pages.items %}
             <tr>
                 <td>{{ forloop.counter }}</td>
-                <td>{{ animal.owner.name }}</td>
                 <td>{{ animal.name }}</td>
+                <td>{{ animal.owner.name }}</td>
                 <td>{{ animal.age }}</td>
                 <td>{{ animal.get_type_display }}</td>
             </tr>

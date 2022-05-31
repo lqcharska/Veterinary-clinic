@@ -1,13 +1,36 @@
 {% extends "main_template.html" %}
 
-{% block title %}Main page - home{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block main_content %}
-<h1>Choose what you want to see</h1>
+<h1>Welcome in Haker's Vet! </h1>
+
+<img src="/static/przychodnia/Haker.jpg" alt="connect" style="max-height:1000px; margin: 20px;" >
 
 <ul>
-    <li><a href="add_owner/">Add owner</a> </li>
-    <li><a href="wyniki/">Wyniki ankiety</a> </li>
-    <li><a href="wyniki/">Wyniki ankiety</a> </li>
+    <li class="nav-item">
+        <a class="nav-link px-4" href="/add_owner" alt="Add owner">
+            <i class="fa-solid fa-user-plus fa-2xl"></i>
+            <i>Add owner</i>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-4" href="/show_owners" alt="Show owners">
+            <i class="fa-solid fa-users fa-2xl"></i> 
+            <i>Show owners</i>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-4" href="/show_animals" >
+            <i class="fa-solid fa-otter fa-2xl"></i>
+            <i>Show animals</i>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-4" href="/show_mt" alr="Show medical treatments">
+            <i class="fa-solid fa-money-bill-transfer fa-2xl"></i>
+            <i>Show medical treatments</i>
+        </a>
+    </li>
 </ul>
 {% endblock %}

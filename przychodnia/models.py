@@ -48,7 +48,11 @@ class Animal(models.Model):
         ('d', 'dog'),
         ('c', 'cat'),
         ('h', 'hamster'),
-        ('g', 'guinea pig')
+        ('g', 'guinea pig'),
+        ('z', "snake"),
+        ('o', "owl"),
+        ('r', "rat"),
+        ('t', "house_elf")
     ])
 
     def __str__(self):

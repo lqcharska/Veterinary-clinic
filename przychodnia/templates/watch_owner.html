@@ -7,30 +7,49 @@
 
     <hr class="mt-2 mb-3"/>
 
-    <h2>{{ owner.name }}</h2>
-    <h2>{{ owner.phone }}</h2>
-    <h2>{{ owner.address }}</h2>
+    <table style="margin: 0px;">
+        <tr>
+            <th> <label>Name:</label> </th>
+            <th> <h2>{{ owner.name }}</h2> </th>
+        </tr>
+        <tr>
+            <th> </label> Phone:</label> </th>
+            <th> <h2>{{ owner.phone }}</h2> </th>
+        </tr>
+        <tr>
+            <th> <label>Address:</label> </th>
+            <th> <h2>{{ owner.address }}</h2> </th>
+        </tr>
+    </table>
 
     <hr class="mt-2 mb-3"/>
     <h3>Register medical treatment for animal</h3>
+
+    <style>
+        .input_text {
+            width: 250px; 
+            height: 30px; 
+            margin: 5px;
+        }
+    </style>
 
     <form id="register_medical_treatments" action="/watch_owner/" method="post">
         {% csrf_token %}
         <input type="hidden" required name="form_name" value="register_medical_treatments" /> 
         <input type="hidden" required name="owner" value="{{ owner.id }}" /> 
-        <input type="text" placeholder="Vet name" required name="vet_name" >
-        <input type="text" placeholder="Tag" required name="tag" >
-        <input type="text" placeholder="Description" required name="description" >
-
-        <select name="animal_id" required>
+        <input class="input_text" type="text" placeholder="Vet name" required name="vet_name" >
+        <input class="input_text" type="text" placeholder="Tag" required name="tag" >
+        <select class="input_text" name="animal_id" required>
             <option></option>
             {% for animal in owners_animals %}
                 <option value="{{ animal.id }}">{{ animal.name }}</option>
             {% endfor %}
         </select>
+        <br>
+        <textarea type="text" placeholder="Description" required name="description" style="margin: 5px; height: 200px; width: 780px;"></textarea>
     </form>
 
-    <button type="submit" form="register_medical_treatments" value="Submit">
+    <button style="margin: 5px;" type="submit" form="register_medical_treatments" value="Submit">
         <i class="fa-solid fa-paper-plane"></i> Submit
     </button>
 
@@ -68,9 +87,9 @@
         {% csrf_token %}
         <input type="hidden" required name="owner" value="{{ owner.id }}" /> 
         <input type="hidden" required name="form_name" value="add_animal" /> 
-        <input type="text" required placeholder="Name" name="name" />
-        <input type="number" required placeholder="Age" name="age" />
-        <select name="type" required>
+        <input class="input_text" type="text" required placeholder="Name" name="name" />
+        <input class="input_text" type="number" required placeholder="Age" name="age" />
+        <select class="input_text" name="type" required>
             <option></option>
             <option value="d">Dog</option>
             <option value="c">Cat</option>
@@ -81,10 +100,12 @@
             <option value="r">Rat</option>
             <option value="r">House-elf</option>
         </select>
-        <input type="file" name="image" accept="image/*" required="" id="id_image">
+        <br>
+        <input class="input_text" type="file" name="image" accept="image/*" required="" id="id_image" oninput="pic.src=window.URL.createObjectURL(this.files[0])">
+        <img id="pic" style="max-height: 300px;" />
     </form>
 
-    <button type="submit" form="add_animal" value="Submit">
+    <button style="margin: 5px;" type="submit" form="add_animal" value="Submit">
         <i class="fa-solid fa-paper-plane"></i> Submit
     </button>
 

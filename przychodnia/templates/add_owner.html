@@ -3,15 +3,28 @@
 {% block title %}Add owner{% endblock %}
 
 {% block main_content %}
-<h1>Register owner to out base</h1>
+<h1>Register new owner</h1>
 
 
 Fill data:
 <form id="add_owner_form" method="post" action="" novalidate>
     {% csrf_token %}
-    <ul>
-        {{ form.as_ul }}
-    </ul>
+    <table style="margin: 20px;">
+        <tr>
+            <th> <label for="id_phone">Phone:</label> </th>
+            <th> <input type="text" name="phone" minlength="9" maxlength="9" required id="id_phone"> </th>
+        </tr>
+
+        <tr>
+            <th> <label for="id_name">Name:</label> </th>
+            <th> <input type="text" name="name" maxlength="30" required id="id_name"> </th>
+        </tr>
+
+        <tr>
+            <th> <label for="id_address">Address:</label> </th>
+            <th> <input type="text" name="address" maxlength="100" required id="id_address"> </th>
+        </tr>
+    </table>
 </form>
 
 <button type="submit" form="add_owner_form" value="Submit">

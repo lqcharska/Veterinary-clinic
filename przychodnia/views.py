@@ -5,8 +5,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm, MedicalTreatmentFrom, FilterInfoForm
-from przychodnia.models import Animal, Owner, MedicalTreatment
+from przychodnia.forms import AddAnimalForm, AddOwnerForm, WatchOwnerForm, MedicalTreatmentFrom, FilterInfoForm, AddVetForm
+from przychodnia.models import Animal, Owner, MedicalTreatment, Vet
 
 from django.utils.dateparse import parse_date
 
@@ -209,7 +209,43 @@ def show_animals(request):
     animals = Animal.objects.all()
     return render(request, 'show_animals.html', {
         'animals_and_pages': _get_page_items(animals, items_per_page, selected_page_number, "animals")
-     })
+    })
+
+
+def show_vets(request):
+    settings = _get_filter_info(request)
+    selected_page_number = settings['selected_page_number']
+    items_per_page = settings['items_per_page']
+
+    error_message = ""
+    success_message = ""
+    if request.POST:
+        received_form = AddVetForm(request.POST, request.FILES)
+
+        if received_form.is_valid():
+            if len(Vet.objects.filter(name=received_form.cleaned_data['name'])) > 0:
+                """
+                If user with this data exists, we can not add this data to database
+                """
+                error_message = f"Vet {received_form.cleaned_data['name']} exists."
+            else:
+                """
+                User not exists, can be added to database
+                """
+                received_form.save()
+                success_message = f"Successfully saved user {received_form.cleaned_data['name']}"
+        else:
+            # TODO this should be handled and message printed to user
+            # received_errors_dictionary = received_form.errors.as_data()
+            print(received_form.errors)
+            error_message = "form is invalid"
+
+    vets = Vet.objects.all()
+    return render(request, 'show_vets.html', {
+        'vets_and_pages': _get_page_items(vets, items_per_page, selected_page_number, "vets"),
+        'success_message': success_message if success_message != "" else None,  # not used for now
+        'error_message': error_message if error_message != "" else None,  # not used for now
+    })
 
 
 def index(request):

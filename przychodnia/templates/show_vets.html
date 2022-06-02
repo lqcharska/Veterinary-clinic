@@ -1,0 +1,42 @@
+{% extends "main_template.html" %}
+
+{% block title %}Show Vet{% endblock %}
+
+{% block main_content %}
+<h1>Register new vet</h1>
+
+<form enctype="multipart/form-data" id="add_vet" action="/show_vets/" method="post">
+    {% csrf_token %}
+    <input class="input_text" type="text" required placeholder="Name" name="name" />
+    <input class="input_text" type="text" required placeholder="Speciality" name="speciality" />
+    <input class="input_text" type="file" name="image" accept="image/*" required="" id="id_image" oninput="pic.src=window.URL.createObjectURL(this.files[0])">
+</form>
+<img id="pic" style="max-height: 300px;" />
+<br>
+<button style="margin: 5px;" type="submit" form="add_vet" value="Submit">
+    <i class="fa-solid fa-paper-plane"></i> Submit
+</button>
+<hr class="mt-2 mb-3"/>
+<hr class="mt-2 mb-3"/>
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Speciality</th>
+        <th>Image</th>
+    </tr>
+
+    {% for vet, index in vets_and_pages.ziped_items %}
+        <tr>
+            <td>{{ index }}</td>
+            <td>{{ vet.name }}</td>
+            <td>{{ vet.speciality }}</td>
+            {% if vet.image %}
+                <td><img src="{{ vet.image.url}}" alt="connect" style="max-height:200px"></td>
+            {% else %}
+                <td><img src="/static/przychodnia/hotdog-solid.svg" alt="connect" style="max-height:100px"></td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

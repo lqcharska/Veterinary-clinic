@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import models
 
-from przychodnia.models import Animal, Owner
+from przychodnia.models import Animal, Owner, Vet
 
 
 class WatchOwnerForm(forms.Form):
@@ -61,3 +61,12 @@ class FilterInfoForm(forms.Form):
     stop_time = forms.DateTimeField(required=False)
     text_query = forms.CharField(max_length=100, required=False)
         
+
+class AddVetForm(models.ModelForm):
+    name = forms.CharField(max_length=50, required=True)
+    speciality = forms.CharField(max_length=50, required=True)
+    image = forms.ImageField()
+
+    class Meta:
+        model = Vet
+        fields = '__all__'

@@ -37,7 +37,17 @@
         {% csrf_token %}
         <input type="hidden" required name="form_name" value="register_medical_treatments" /> 
         <input type="hidden" required name="owner" value="{{ owner.id }}" /> 
-        <input class="input_text" type="text" placeholder="Vet name" required name="vet_name" >
+        
+        
+        <!-- <input class="input_text" type="text" placeholder="Vet name" required name="vet_name" > -->
+        <select class="input_text" name="vet_id" required placeholder="Vet name">
+            <option></option>
+            {% for vet in vets %}
+                <option value="{{ vet.id }}">{{ vet.name }}</option>
+            {% endfor %}
+        </select>
+
+
         <input class="input_text" type="text" placeholder="Tag" required name="tag" >
         <select class="input_text" name="animal_id" required>
             <option></option>
@@ -125,7 +135,7 @@
             {% for mt in medical_treatments %}
                 <tr>
                     <td>{{ mt.animal.name }}</td>
-                    <td>{{ mt.vet_name }}</td>
+                    <td>{{ mt.vet.name }}</td>
                     <td>{{ mt.tag }}</td>
                     <td>{{ mt.description }}</td>
                     <td>{{ mt.date }}</td>

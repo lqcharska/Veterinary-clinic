@@ -59,16 +59,16 @@ class Animal(models.Model):
         return 'name: %s, age: %s, type: %s' % (self.name, self.age, self.type)
 
 
-class MedicalTreatment(models.Model):
-    owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
-    animal = models.ForeignKey(Animal, on_delete=models.CASCADE)
-    vet_name = models.CharField(max_length=100)
-    tag = models.CharField(max_length=100)
-    description = models.CharField(max_length=2000)
-    date = models.DateTimeField(auto_now=True)
-
-
 class Vet(models.Model):
     name = models.CharField(max_length=50)
     speciality = models.CharField(max_length=50)
     image = models.ImageField(upload_to=path_and_rename, max_length=255, blank=True, null=True)
+
+class MedicalTreatment(models.Model):
+    owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
+    animal = models.ForeignKey(Animal, on_delete=models.CASCADE)
+    vet = models.ForeignKey(Vet, on_delete=models.CASCADE)
+    tag = models.CharField(max_length=100)
+    description = models.CharField(max_length=2000)
+    date = models.DateTimeField(auto_now=True)
+

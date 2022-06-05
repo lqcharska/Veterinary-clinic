@@ -50,7 +50,7 @@ class AddAnimalForm(models.ModelForm):
 class MedicalTreatmentFrom(forms.Form):
     owner = forms.ModelChoiceField(queryset=Owner.objects.all())
     animal_id = forms.IntegerField(required=True)
-    vet_name = forms.CharField(max_length=100)
+    vet_id = forms.IntegerField(required=True)
     tag = forms.CharField(max_length=100)
     description = forms.CharField(max_length=2000)
 

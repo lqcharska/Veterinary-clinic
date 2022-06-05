@@ -310,6 +310,7 @@ def _render_watch_owner(request, owner, success_message, error_message):
         'success_message': success_message if success_message != "" else None,
         'error_message': error_message if error_message != "" else None,
         'owners_animals': owners_animals,
+        'vets': Vet.objects.all(),
         'medical_treatments': medical_treatments if len(medical_treatments) > 0 else None,
     })
 
@@ -322,13 +323,13 @@ def watch_owner(request):
         if received_rmt_form.is_valid():
             owner = received_rmt_form.cleaned_data["owner"]
             animal_id = received_rmt_form.cleaned_data["animal_id"]
-            vet_name = received_rmt_form.cleaned_data["vet_name"]
+            vet_id = received_rmt_form.cleaned_data["vet_id"]
             tag = received_rmt_form.cleaned_data["tag"]
             description = received_rmt_form.cleaned_data["description"]
 
             mt_model = MedicalTreatment(owner=owner,
                             animal=Animal.objects.filter(id=animal_id)[0],
-                            vet_name=vet_name,
+                            vet=Vet.objects.filter(id=vet_id)[0],
                             tag=tag,
                             description=description,
                             date=datetime.now())
